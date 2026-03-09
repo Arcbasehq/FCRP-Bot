@@ -1,3 +1,5 @@
 .env
 fcrp_server_info
 testing_server_info
+venv
+.venv
