@@ -9,6 +9,7 @@ load_dotenv()
 TOKEN = os.getenv("DISCORD_TOKEN")
 GUILD_ID = int(os.getenv("GUILD_ID"))
 VOICE_CHANNEL_ID = int(os.getenv("VOICE_CHANNEL_ID"))
+LOG_CHANNEL_ID = int(os.getenv("LOG_CHANNEL_ID"))
 
 intents = discord.Intents.default()
 intents.members = True
@@ -41,6 +42,12 @@ def is_staff(member: discord.Member):
     name_upper = member.display_name.upper()
     return any(name_upper.startswith(prefix) for prefix in STAFF_PREFIXES)
 
+async def log_disconnection(member: discord.Member, reason: str):
+    guild = bot.get_guild(GUILD_ID)
+    log_channel = guild.get_channel(LOG_CHANNEL_ID)
+    if log_channel:
+        await log_channel.send(f"User `{member.display_name}` was disconnected from VC. Reason: {reason}")
+
 async def validate_member(member: discord.Member):
     if is_staff(member):
         return
@@ -56,6 +63,7 @@ async def validate_member(member: discord.Member):
             if member.voice and member.voice.channel and member.voice.channel.id == VOICE_CHANNEL_ID:
                 try:
                     await member.move_to(None)
+                    await log_disconnection(member, "Invalid callsign for department")
                 except:
                     pass
         return
@@ -68,6 +76,7 @@ async def validate_member(member: discord.Member):
                 pass
             try:
                 await member.move_to(None)
+                await log_disconnection(member, "Ranked callsign without LEO role")
             except:
                 pass
     elif not UNRANKED_REGEX.search(name):
@@ -78,6 +87,7 @@ async def validate_member(member: discord.Member):
                 pass
             try:
                 await member.move_to(None)
+                await log_disconnection(member, "Invalid unranked callsign")
             except:
                 pass
 
@@ -96,6 +106,7 @@ async def kick_member_by_name(ctx, *, search_name: str):
         try:
             await member_to_kick.kick(reason=f"Kicked by {ctx.author}")
             await ctx.send(f"Kicked {member_to_kick.display_name}")
+            await log_disconnection(member_to_kick, f"Kicked by {ctx.author}")
         except discord.Forbidden:
             await ctx.send("I don't have permission to kick this member.")
         except Exception as e:
