@@ -22,7 +22,7 @@ UNRANKED_REGEX = re.compile(r"\b(9D|8D)-\d{2}\b")
 LEO_ROLES = {
     "Florida Highway Patrol": re.compile(r"\b(1K|2K|3K|4K|5K|6K)-\d{2}\b"),
     "Fort Lauderdale Police Department": re.compile(r"\b(1A|2A|3A|4A|5A|7A)-\d{2}\b"),
-    "Broward County Sheriff's Office": re.compile(r"\b(2B|3B|4B|5B|7B)-\d{2}\b")
+    "Broward County Sheriff's Office": re.compile(r"\b(2B|3B|4B|5B|7B|1S)-\d{2}\b")
 }
 RANKED_REGEX = re.compile(r"\b(1S|1A|2A|3A|4A|5A|2B|3B|4B|5B|7B|1K|2K|3K|4K|5K|6K)-\d{2}\b")
 STAFF_PREFIXES = ("!STAFF", "!MOD")
